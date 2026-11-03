@@ -1,123 +1,750 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Collection & Export</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #1a73e8; text-align: center; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #444; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .row { display: flex; gap: 15px; }
-        .row div { flex: 1; }
-        .btn-group { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .save-btn { background-color: #1a73e8; color: white; border: none; padding: 14px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        .download-btn { background-color: #34a853; color: white; border: none; padding: 14px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        .save-btn:hover { background-color: #1557b0; }
-        .download-btn:hover { background-color: #2d8243; }
-        #status { margin-top: 15px; text-align: center; font-size: 14px; color: #1a73e8; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Send Me Your Prettiest Smiles 📸❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --rose: #ff4d6d;
+      --crimson: #c9184a;
+      --wine: #590d22;
+      --soft-pink: #ffccd5;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --border-color: rgba(255, 179, 193, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 10% 20%, #ffe3e8 0%, #ffd0db 50%, #fbb1bd 100%);
+      color: #2b1e22;
+      min-height: 100vh;
+      padding: 85px 16px 50px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body.unlocked {
+      overflow-y: auto;
+    }
+
+    /* Floating Music Widget */
+    .music-widget {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px 8px 10px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(201, 24, 74, 0.15);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .music-widget:hover {
+      transform: translateY(-2px);
+    }
+
+    .vinyl {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: repeating-radial-gradient(circle, #2b1e22 0, #160e10 2px, #2b1e22 4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vinyl-core {
+      width: 12px;
+      height: 12px;
+      background: var(--rose);
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .spinning {
+      animation: spinVinyl 3.5s linear infinite;
+    }
+
+    @keyframes spinVinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .song-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .song-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--crimson);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .song-artist {
+      font-size: 11px;
+      color: #6c5a60;
+      font-weight: 500;
+    }
+
+    .equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+    }
+
+    .bar {
+      width: 3px;
+      background: var(--rose);
+      border-radius: 2px;
+      height: 4px;
+    }
+
+    .bar-active:nth-child(1) { animation: soundBar 0.9s infinite alternate; }
+    .bar-active:nth-child(2) { animation: soundBar 1.2s infinite alternate 0.2s; }
+    .bar-active:nth-child(3) { animation: soundBar 0.7s infinite alternate 0.4s; }
+
+    @keyframes soundBar {
+      0% { height: 3px; }
+      100% { height: 14px; }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 28px;
+      padding: clamp(22px, 5vw, 36px);
+      box-shadow: 0 16px 45px rgba(201, 24, 74, 0.14);
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .heart-badge {
+      font-size: 40px;
+      display: inline-block;
+      animation: pulse 1.4s infinite ease-in-out;
+      margin-bottom: 4px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.18); }
+    }
+
+    .title {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(38px, 8vw, 54px);
+      color: var(--crimson);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #6c5a60;
+      line-height: 1.5;
+    }
+
+    .lock-banner {
+      background: #fff0f3;
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin: 16px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--crimson);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .lock-banner.unlocked-banner {
+      background: #e8f8f5;
+      border-color: #2ecc71;
+      color: #27ae60;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--rose);
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 18px;
+      transition: all 0.25s ease;
+    }
+
+    .upload-zone:hover {
+      background: #fff;
+      border-color: var(--crimson);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .upload-txt-main {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--wine);
+    }
+
+    .upload-txt-sub {
+      font-size: 12px;
+      color: #8c787e;
+      margin-top: 4px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .preview-card {
+      background: #fff;
+      padding: 6px 6px 14px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .preview-img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #ffe3e8;
+    }
+
+    .preview-index {
+      font-family: 'Caveat', cursive;
+      font-size: 14px;
+      color: var(--crimson);
+      text-align: center;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--crimson);
+      color: white;
+      border: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 11px;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    /* Locked Section */
+    .locked-section {
+      opacity: 0.35;
+      pointer-events: none;
+      filter: blur(2px);
+      transition: all 0.4s ease;
+    }
+
+    .unlocked-section {
+      opacity: 1;
+      pointer-events: all;
+      filter: blur(0);
+    }
+
+    /* Love Quotes Section */
+    .quotes-box {
+      margin: 24px 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .quotes-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 34px;
+      color: var(--crimson);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .quote-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-left: 4px solid var(--rose);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #3d2d32;
+      box-shadow: 0 4px 14px rgba(201, 24, 74, 0.06);
+      transition: transform 0.2s ease, border-color 0.2s;
+    }
+
+    .quote-card:hover {
+      transform: translateX(4px);
+      border-left-color: var(--crimson);
+    }
+
+    .quote-heart {
+      font-weight: 700;
+      color: var(--crimson);
+    }
+
+    /* Input Field */
+    .caption-box {
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .caption-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--wine);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .custom-caption {
+      width: 100%;
+      padding: 15px 18px;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #ffffff;
+      color: #2b1e22;
+      outline: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(201, 24, 74, 0.06);
+    }
+
+    .custom-caption:focus {
+      border-color: var(--crimson);
+      box-shadow: 0 6px 18px rgba(201, 24, 74, 0.16);
+    }
+
+    .auto-send-hint {
+      text-align: center;
+      font-size: 12px;
+      color: #6c5a60;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* Sending Spinner Screen */
+    .redirect-card {
+      display: none;
+      text-align: center;
+      padding: 20px 0 10px;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .redirect-card.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #ffccd5;
+      border-top-color: #25D366;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 14px auto 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Autoplay Unlock Screen */
+    .entry-prompt {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, #fff0f3, #fbb1bd);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+
+    .entry-prompt.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .entry-heart {
+      font-size: 65px;
+      animation: pulse 1.3s infinite ease-in-out;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .entry-btn {
+      background: var(--crimson);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 15px 36px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(201, 24, 74, 0.35);
+      font-family: inherit;
+    }
+
+    #ytPlayer {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Data Entry Portal</h2>
-    <form id="dataForm">
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="name" placeholder="Full Name" required>
+  <!-- Entry Screen for Autoplay -->
+  <div class="entry-prompt" id="entryScreen">
+    <div class="entry-heart" onclick="startExperience()">💌</div>
+    <h1 style="font-family:'Great Vibes', cursive; font-size: 52px; color: var(--crimson); margin-bottom: 8px;">A Small Request</h1>
+    <p style="color: #6c5a60; margin-bottom: 24px; max-width: 360px;">Turn up your volume and tap below to open our special page...</p>
+    <button class="entry-btn" onclick="startExperience()">Open With Music 🎵</button>
+  </div>
+
+  <!-- Music Status Widget -->
+  <div class="music-widget" id="musicBtn" onclick="toggleAudio()" title="Play / Pause">
+    <div class="vinyl spinning" id="vinylIcon">
+      <div class="vinyl-core"></div>
+    </div>
+    <div class="song-details">
+      <div class="song-name">Mahama <span>❤️</span></div>
+      <div class="song-artist">Jadi • Odia Film Song</div>
+    </div>
+    <div class="equalizer">
+      <div class="bar bar-active"></div>
+      <div class="bar bar-active"></div>
+      <div class="bar bar-active"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="heart-badge">📸</div>
+      <h1 class="title">Drop Your Pictures</h1>
+      <p class="subtitle">Pick 7 or 8 of your prettiest smiles, favorite selfies, or our sweetest memories 💕</p>
+      
+      <div class="lock-banner" id="lockStatus">
+        🔒 Locked: Please select at least 7 photos to unlock the rest of the page!
+      </div>
+    </div>
+
+    <!-- Hidden Native File Input -->
+    <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFileSelect(event)">
+
+    <!-- Upload Box -->
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+      <span class="upload-icon">✨</span>
+      <div class="upload-txt-main">Tap to Choose Photos from Gallery</div>
+      <div class="upload-txt-sub">Choose 7 to 8 photos (<span id="photoCountText">0/7 added</span>)</div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="preview-grid" id="previewGrid"></div>
+
+    <!-- Scroll & Action Section (Strictly Locked until 7 photos are picked) -->
+    <div class="locked-section" id="lockedContent">
+      
+      <!-- Love Quotes Section -->
+      <div class="quotes-box">
+        <div class="quotes-title">Words From My Heart</div>
+        
+        <div class="quote-card">
+          "In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine. <span class="quote-heart">I love you</span> more than words could ever say."
         </div>
 
-        <div class="row">
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" id="age">
-            </div>
-            <div class="form-group">
-                <label>Gender</label>
-                <select id="gender">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+        <div class="quote-card">
+          "You are my today and all of my tomorrows. Every single smile of yours makes my whole universe brighter. <span class="quote-heart">I love you</span>, always and forever."
         </div>
 
-        <div class="form-group">
-            <label>Village Name</label>
-            <input type="text" id="village" placeholder="e.g. Adapal">
+        <div class="quote-card">
+          "I didn't choose to fall in love with you; my heart simply found its home in yours. <span class="quote-heart">I love you</span> to the moon, beyond the stars, and back."
         </div>
+      </div>
 
-        <div class="form-group">
-            <label>SHG Name</label>
-            <input type="text" id="shg">
+      <!-- Message Area (Direct Auto-Send without extra button) -->
+      <div class="caption-box" id="messageSection">
+        <label class="caption-label" for="userNote">💌 Type your message for me:</label>
+        <input 
+          type="text" 
+          id="userNote" 
+          class="custom-caption" 
+          placeholder="Write your sweet words here & press Enter..." 
+          onkeydown="handleMessageEnter(event)"
+        />
+        <div class="auto-send-hint" id="autoHint">
+          👉 Press <strong>Enter</strong> / <strong>Done</strong> on your keyboard to send directly to WhatsApp!
         </div>
+      </div>
 
-        <div class="row">
-            <div class="form-group">
-                <label>Aadhaar</label>
-                <input type="text" id="aadhaar" maxlength="12">
-            </div>
-            <div class="form-group">
-                <label>Land (Acres)</label>
-                <input type="number" step="0.01" id="area">
-            </div>
-        </div>
+      <!-- Redirecting Indicator -->
+      <div class="redirect-card" id="redirectingScreen">
+        <div style="font-size: 38px;">💖</div>
+        <div style="font-family:'Great Vibes', cursive; font-size: 34px; color: var(--crimson);">Opening WhatsApp...</div>
+        <div class="spinner"></div>
+      </div>
 
-        <div class="btn-group">
-            <button type="button" class="save-btn" onclick="saveData()">Save Entry</button>
-            <button type="button" class="download-btn" onclick="downloadCSV()">Download Excel (CSV)</button>
-        </div>
-        <div id="status"></div>
-    </form>
-</div>
+    </div>
+  </div>
 
-<script>
-    function saveData() {
-        const entry = {
-            Name: document.getElementById('name').value,
-            Age: document.getElementById('age').value,
-            Gender: document.getElementById('gender').value,
-            Village: document.getElementById('village').value,
-            SHG: document.getElementById('shg').value,
-            Aadhaar: document.getElementById('aadhaar').value,
-            Area: document.getElementById('area').value,
-            Time: new Date().toLocaleDateString()
-        };
+  <!-- Hidden YouTube Audio Player -->
+  <div id="ytPlayer"></div>
 
-        if(!entry.Name) { alert("Please enter at least a name."); return; }
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 
-        let allData = JSON.parse(localStorage.getItem('beneficiaryList')) || [];
-        allData.push(entry);
-        localStorage.setItem('beneficiaryList', JSON.stringify(allData));
+  <script>
+    const MY_PHONE_NUMBER = '917894688332';
+    let selectedImages = [];
+    let player;
+    let isPlaying = false;
+    let hasSent = false;
 
-        document.getElementById('status').innerText = "✅ Saved! Total entries: " + allData.length;
-        document.getElementById('dataForm').reset();
-    }
-
-    function downloadCSV() {
-        const data = JSON.parse(localStorage.getItem('beneficiaryList'));
-        if (!data || data.length === 0) {
-            alert("No data found to download.");
-            return;
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytPlayer', {
+        videoId: 'jK-AFu0KYZY',
+        playerVars: {
+          autoplay: 0,
+          loop: 1,
+          playlist: 'jK-AFu0KYZY',
+          controls: 0,
+          showinfo: 0,
+          modestbranding: 1
+        },
+        events: {
+          onStateChange: onPlayerStateChange
         }
-
-        const headers = Object.keys(data[0]).join(",");
-        const rows = data.map(obj => Object.values(obj).map(val => `"${val}"`).join(","));
-        const csvContent = "data:text/csv;charset=utf-8," + headers + "\n" + rows.join("\n");
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "collected_data.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      });
     }
-</script>
 
+    function onPlayerStateChange(event) {
+      const vinyl = document.getElementById('vinylIcon');
+      const bars = document.querySelectorAll('.bar');
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        vinyl.classList.add('spinning');
+        bars.forEach(b => b.classList.add('bar-active'));
+      } else {
+        isPlaying = false;
+        vinyl.classList.remove('spinning');
+        bars.forEach(b => b.classList.remove('bar-active'));
+      }
+    }
+
+    function startExperience() {
+      document.getElementById('entryScreen').classList.add('hidden');
+      if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+      }
+    }
+
+    function toggleAudio() {
+      if (!player || typeof player.getPlayerState !== 'function') return;
+      if (isPlaying) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
+      }
+    }
+
+    function handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+
+      files.forEach(file => {
+        if (selectedImages.length < 8 && file.type.startsWith('image/')) {
+          selectedImages.push(file);
+        }
+      });
+
+      renderPreviews();
+    }
+
+    function removePhoto(index) {
+      selectedImages.splice(index, 1);
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      const grid = document.getElementById('previewGrid');
+      const lockStatus = document.getElementById('lockStatus');
+      const photoCountText = document.getElementById('photoCountText');
+      const lockedSection = document.getElementById('lockedContent');
+
+      grid.innerHTML = '';
+
+      selectedImages.forEach((file, idx) => {
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+
+        const img = document.createElement('img');
+        img.className = 'preview-img';
+        img.src = URL.createObjectURL(file);
+
+        const caption = document.createElement('div');
+        caption.className = 'preview-index';
+        caption.innerText = `Photo #${idx + 1} ✨`;
+
+        const rmBtn = document.createElement('button');
+        rmBtn.className = 'remove-btn';
+        rmBtn.innerHTML = '✕';
+        rmBtn.onclick = () => removePhoto(idx);
+
+        card.appendChild(rmBtn);
+        card.appendChild(img);
+        card.appendChild(caption);
+        grid.appendChild(card);
+      });
+
+      photoCountText.innerText = `${selectedImages.length}/7 added`;
+
+      if (selectedImages.length >= 7) {
+        document.body.classList.add('unlocked');
+        lockedSection.classList.add('unlocked-section');
+        lockStatus.className = 'lock-banner unlocked-banner';
+        lockStatus.innerHTML = `🔓 Unlocked! You've picked ${selectedImages.length} gorgeous pictures!`;
+
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ff4d6d', '#ffccd5', '#25D366']
+        });
+      } else {
+        document.body.classList.remove('unlocked');
+        lockedSection.classList.remove('unlocked-section');
+        lockStatus.className = 'lock-banner';
+        lockStatus.innerHTML = `🔒 Locked: Pick ${7 - selectedImages.length} more photo${(7 - selectedImages.length) === 1 ? '' : 's'} to scroll down and continue!`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Handles the keyboard 'Enter' or 'Done' key
+    function handleMessageEnter(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        triggerWhatsAppSend();
+      }
+    }
+
+    function triggerWhatsAppSend() {
+      if (hasSent) return;
+
+      if (selectedImages.length < 7) {
+        alert('Please choose at least 7 photos first! 📸');
+        return;
+      }
+
+      hasSent = true;
+
+      // Show redirect spinner and hide input box
+      document.getElementById('messageSection').style.display = 'none';
+      document.getElementById('redirectingScreen').classList.add('active');
+
+      confetti({
+        particleCount: 110,
+        spread: 85,
+        origin: { y: 0.6 },
+        colors: ['#ff4d6d', '#ffccd5', '#25D366', '#c9184a']
+      });
+
+      const note = document.getElementById('userNote').value.trim();
+
+      let message = `Hey! I just chose my ${selectedImages.length} favorite photos on your page 🥰📸\n\n`;
+      if (note) {
+        message += `💌 *Message from my heart:* "${note}"\n\n`;
+      }
+      message += `I love you so much! Sending all my photos to you right now! 👇❤️`;
+
+      const encodedMsg = encodeURIComponent(message);
+      const whatsappURL = `https://wa.me/${MY_PHONE_NUMBER}?text=${encodedMsg}`;
+
+      setTimeout(() => {
+        window.location.href = whatsappURL;
+      }, 700);
+    }
+  </script>
 </body>
 </html>
