@@ -178,12 +178,18 @@
             gap: 8px;
         }
 
-        /* Photo Gallery Grid: Photos 1-3 (16:9) + Photo 4 (9:16) */
+        /* Photo Gallery Grid: Photos 1-3 (9:16) + Photo 4 (16:9) */
         .photo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
             align-items: start;
+        }
+
+        @media (max-width: 600px) {
+            .photo-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            }
         }
 
         .photo-card {
@@ -200,25 +206,26 @@
             transform: translateY(-4px);
         }
 
+        /* Default 9:16 Portrait Styling for Photos 1-3 */
         .photo-card img {
             width: 100%;
-            aspect-ratio: 16 / 9;
+            aspect-ratio: 9 / 16;
             object-fit: cover;
             display: block;
             border-radius: 8px;
             background: #ffe4e6;
         }
 
-        /* Dedicated 9:16 Portrait Styling for Photo 4 */
-        .photo-card.portrait-9-16 {
+        /* Dedicated 16:9 Landscape Styling for Photo 4 */
+        .photo-card.landscape-16-9 {
             grid-column: 1 / -1;
-            max-width: 280px;
+            max-width: 560px;
             width: 100%;
             margin: 6px auto 0;
         }
 
-        .photo-card.portrait-9-16 img {
-            aspect-ratio: 9 / 16;
+        .photo-card.landscape-16-9 img {
+            aspect-ratio: 16 / 9;
         }
 
         .photo-caption {
@@ -359,24 +366,24 @@
             </audio>
         </div>
 
-        <!-- Our Beautiful Memories (Photos 1-3: 16:9, Photo 4: 9:16) -->
+        <!-- Our Beautiful Memories (Photos 1-3: 9:16, Photo 4: 16:9) -->
         <div class="section">
             <div class="section-title">📸 Our Beautiful Memories</div>
             <div class="photo-grid">
                 <div class="photo-card">
-                    <img src="photo1.jpg" alt="Our Memory 1" onerror="this.src='https://placehold.co/640x360/ffe4e6/e11d48?text=Our+Photo+1+(16:9)'">
+                    <img src="photo1.jpg" alt="Our Memory 1" onerror="this.src='https://placehold.co/360x640/ffe4e6/e11d48?text=Our+Photo+1+(9:16)'">
                     <div class="photo-caption">My favorite smile in the world</div>
                 </div>
                 <div class="photo-card">
-                    <img src="photo2.jpg" alt="Our Memory 2" onerror="this.src='https://placehold.co/640x360/ffe4e6/e11d48?text=Our+Photo+2+(16:9)'">
+                    <img src="photo2.jpg" alt="Our Memory 2" onerror="this.src='https://placehold.co/360x640/ffe4e6/e11d48?text=Our+Photo+2+(9:16)'">
                     <div class="photo-caption">Every moment with you is magic</div>
                 </div>
                 <div class="photo-card">
-                    <img src="photo3.jpg" alt="Our Memory 3" onerror="this.src='https://placehold.co/640x360/ffe4e6/e11d48?text=Our+Photo+3+(16:9)'">
+                    <img src="photo3.jpg" alt="Our Memory 3" onerror="this.src='https://placehold.co/360x640/ffe4e6/e11d48?text=Our+Photo+3+(9:16)'">
                     <div class="photo-caption">The reason behind my happiness</div>
                 </div>
-                <div class="photo-card portrait-9-16">
-                    <img src="photo4.jpg" alt="Our Memory 4" onerror="this.src='https://placehold.co/360x640/ffe4e6/e11d48?text=Our+Photo+4+(9:16)'">
+                <div class="photo-card landscape-16-9">
+                    <img src="photo4.jpg" alt="Our Memory 4" onerror="this.src='https://placehold.co/640x360/ffe4e6/e11d48?text=Our+Photo+4+(16:9)'">
                     <div class="photo-caption">Forever my favorite person</div>
                 </div>
             </div>
@@ -477,5 +484,4 @@
 </script>
 
 </body>
-    </html>
-    
+</html>
